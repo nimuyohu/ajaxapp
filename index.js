@@ -1,6 +1,7 @@
-const heading = document.querySelector('h2');
 
-const headingText = heading.textContent;
+function main() {
+    fetchUserInfo('nimuyohu')
+};
 
 function fetchUserInfo(userId) {
 fetch(`https://api.github.com/users/${encodeURIComponent(userId)}`)
@@ -12,25 +13,33 @@ fetch(`https://api.github.com/users/${encodeURIComponent(userId)}`)
             // json形式にパースして渡す
             return response.json().then(userInfo => {
                 console.log(userInfo)
-                const view = escapeHTML`
-                            <h4>${userInfo.name} (@${userInfo.login})</h4>
-                            <img src="${userInfo.avatar_url}" alt="${userInfo.login}" height="100">
-                            <dl>
-                                <dt>Location</dt>
-                                <dd>${userInfo.location}</dd>
-                                <dt>Repositories</dt>
-                                <dd>${userInfo.public_repos}</dd>
-                            </dl>
-                            `;
+                const view = createView(userInfo)
 
-            const result = document.getElementById('result')
-            result.innerHTML = view
+                displayView(view)
             })
         }
         }).catch(error => {
             console.error(error); 
         });
         
+}
+
+function createView(userInfo) {
+    return escapeHTML`
+    <h4>${userInfo.name} (@${userInfo.login})</h4>
+    <img src="${userInfo.avatar_url}" alt="${userInfo.login}" height="100">
+    <dl>
+        <dt>Location</dt>
+        <dd>${userInfo.location}</dd>
+        <dt>Repositories</dt>
+        <dd>${userInfo.public_repos}</dd>
+    </dl>
+    `;
+}
+
+function displayView(view) {
+    const result = document.getElementById('result')
+    result.innerHTML = view
 }
 
 function escapeHTML(strings, ...values) {
