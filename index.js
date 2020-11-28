@@ -1,7 +1,8 @@
 // async/awaitに置き換え
 async function main() {
     try {
-        const userInfo = await fetchUserInfo('nimuyohu');
+        const userId = getUserId();
+        const userInfo = await fetchUserInfo(userId);
         const view = createView(userInfo);
         displayView(view)
     } catch (error) {
@@ -37,6 +38,11 @@ function createView(userInfo) {
     </dl>
     `;
 }
+
+function getUserId(userId){
+    return document.getElementById('userId').value
+}
+
 // 生成したHTMLをDOMで表示する
 function displayView(view) {
     const result = document.getElementById('result')
