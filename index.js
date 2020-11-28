@@ -1,8 +1,12 @@
 
 function main() {
     fetchUserInfo('nimuyohu')
+        // ここではJSONオブジェクトで解決されるPromise
+        .then((userInfo) => createView(userInfo))
+        //　ここではHTML文字列で解決されるPromise
+        .then((view) => displayView(view))
+        // Promiseチェーンの中で発生したエラーを受け取る
         .catch((error) => {
-            // Promiseチェーンの中で発生したエラーを受け取る
             console.error(`エラーが発生しました (${error})`);
         });
 };
@@ -12,22 +16,17 @@ function fetchUserInfo(userId) {
     // fetchの戻り値のPromiseをreturnする
     return fetch(`https://api.github.com/users/${encodeURIComponent(userId)}`)
         .then(response => {
-            console.log(response.status);//200
             if (!response.ok){
                 // エラーレスポンスからRejectedなPromiseを作成して返す
                 return Promise.reject(new Error(`${response.status}: ${response.statusText}`));
             } else {
                 // json形式にパースして渡す
-                return response.json().then(userInfo => {
-                    // HTMLの組み立て
-                    const view = createView(userInfo)
-                    // HTMLの挿入
-                    displayView(view)
-                })
+                return response.json()
             }
             })
 }
 
+// fetchしたユーザーの情報を引数に、HTMLを生成して返す
 function createView(userInfo) {
     return escapeHTML`
     <h4>${userInfo.name} (@${userInfo.login})</h4>
@@ -40,7 +39,7 @@ function createView(userInfo) {
     </dl>
     `;
 }
-
+// 生成したHTMLをDOMで表示する
 function displayView(view) {
     const result = document.getElementById('result')
     result.innerHTML = view
